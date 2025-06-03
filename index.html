@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ada Global Service - Gestion</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background: rgba(255, 255, 255, 0.95);
+        margin: 10px;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .header {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        padding: 20px;
+        text-align: center;
+        border-radius: 15px 15px 0 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .header-content {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .logo {
+        height: 60px;
+        width: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        background: white;
+        padding: 5px;
+      }
+
+      .header-text h1 {
+        font-size: 2.2em;
+        margin-bottom: 5px;
+        margin: 0;
+      }
+
+      .header-text p {
+        opacity: 0.9;
+        font-size: 1.1em;
+        margin: 5px 0 0 0;
+      }
+
+      .nav-tabs {
+        display: flex;
+        background: #f8f9fa;
+        border-bottom: 3px solid #dee2e6;
+      }
+
+      .nav-tab {
+        flex: 1;
+        padding: 15px 20px;
+        background: #e9ecef;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border-right: 1px solid #dee2e6;
+      }
+
+      .nav-tab:last-child {
+        border-right: none;
+      }
+
+      .nav-tab.active {
+        background: white;
+        color: #667eea;
+        border-bottom: 3px solid #667eea;
+        margin-bottom: -3px;
+      }
+
+      .nav-tab:hover:not(.active) {
+        background: #f1f3f4;
+      }
+
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background: white;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .form-container {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border-left: 4px solid #667eea;
+      }
+
+      .form-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+        align-items: center;
+      }
+
+      .form-group {
+        flex: 1;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #495057;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+      }
+
+      .btn-success {
+        background: linear-gradient(45deg, #28a745, #1e7e34);
+        color: white;
+      }
+
+      .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+      }
+
+      .table-container {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        padding: 15px 10px;
+        text-align: left;
+        font-weight: 600;
+      }
+
+      td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      tr:hover {
+        background: #f8f9fa;
+      }
+
+      .status-ok {
+        color: #28a745;
+        font-weight: bold;
+      }
+
+      .status-critique {
+        color: #dc3545;
+        font-weight: bold;
+      }
+
+      .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      .stat-card h3 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+      }
+
+      .stat-card p {
+        font-size: 1.1em;
+        opacity: 0.9;
+      }
+
+      .date-filters {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        align-items: end;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 50px;
+        color: #6c757d;
+      }
+
+      .success-message {
+        background: #d4edda;
+        color: #155724;
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        border: 1px solid #c3e6cb;
+      }
+
+      .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        border: 1px solid #f5c6cb;
+      }
+
+      .btn-print {
+        background: linear-gradient(45deg, #17a2b8, #138496);
+        color: white;
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+
+      .btn-print:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(23, 162, 184, 0.3);
+      }
+
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        .print-section,
+        .print-section * {
+          visibility: visible;
+        }
+        .print-section {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="header-content">
+          <img src="assets/logo.jpg" alt="Ada Global Service" class="logo" />
+          <div class="header-text">
+            <h1>Ada Global Service</h1>
+            <p>Système de gestion des stocks et ventes - AGS</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-tabs">
+        <button class="nav-tab active" onclick="showTab('produits')">
+          📦 Produits
+        </button>
+        <button class="nav-tab" onclick="showTab('approvisionnement')">
+          📥 Approvisionnement
+        </button>
+        <button class="nav-tab" onclick="showTab('ventes')">💰 Ventes</button>
+        <button class="nav-tab" onclick="showTab('stock')">
+          📊 Stock Actuel
+        </button>
+        <button class="nav-tab" onclick="showTab('stats')">
+          📈 Statistiques
+        </button>
+      </div>
+
+      <div class="content">
+        <!-- Onglet Produits -->
+        <div id="produits" class="tab-content active">
+          <div class="form-container">
+            <h3>Ajouter un nouveau produit</h3>
+            <div id="produit-message"></div>
+            <form id="form-produit">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Référence *</label>
+                  <input
+                    type="text"
+                    name="reference"
+                    required
+                    placeholder="REF001"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Nom du produit *</label>
+                  <input
+                    type="text"
+                    name="nom"
+                    required
+                    placeholder="T-shirt blanc"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Catégorie</label>
+                  <input type="text" name="categorie" placeholder="Vêtements" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Prix de vente (CFA) *</label>
+                  <input
+                    type="number"
+                    name="prix_vente"
+                    step="1"
+                    required
+                    placeholder="25000"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Stock minimum</label>
+                  <input type="number" name="stock_minimum" placeholder="5" />
+                </div>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-primary">
+                    Ajouter le produit
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div
+            class="form-container"
+            style="margin-bottom: 20px; padding: 15px"
+          >
+            <div class="form-row">
+              <div class="form-group">
+                <label>🔍 Rechercher un produit</label>
+                <input
+                  type="text"
+                  id="search-produits"
+                  placeholder="Nom du produit..."
+                  onkeyup="searchInTable('produits-list', this.value, [1])"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Référence</th>
+                  <th>Nom</th>
+                  <th>Catégorie</th>
+                  <th>Prix de vente</th>
+                  <th>Stock minimum</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="produits-list">
+                <tr>
+                  <td colspan="6" class="loading">Chargement...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Onglet Approvisionnement -->
+        <div id="approvisionnement" class="tab-content">
+          <div class="form-container">
+            <h3>Nouvel approvisionnement</h3>
+            <div id="appro-message"></div>
+            <form id="form-approvisionnement">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Produit *</label>
+                  <select name="produit_id" id="select-produit-appro" required>
+                    <option value="">Sélectionner un produit</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Fournisseur</label>
+                  <input
+                    type="text"
+                    name="fournisseur"
+                    placeholder="Nom du fournisseur"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Date d'approvisionnement *</label>
+                  <input type="date" name="date_appro" required />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Quantité *</label>
+                  <input
+                    type="number"
+                    name="quantite"
+                    required
+                    placeholder="10"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Prix d'achat unitaire (CFA)</label>
+                  <input
+                    type="number"
+                    name="prix_achat"
+                    step="1"
+                    placeholder="12500"
+                  />
+                </div>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-success">
+                    Enregistrer l'approvisionnement
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div
+            class="form-container"
+            style="margin-bottom: 20px; padding: 15px"
+          >
+            <div class="form-row">
+              <div class="form-group">
+                <label>🔍 Rechercher par nom de produit</label>
+                <input
+                  type="text"
+                  id="search-appro"
+                  placeholder="Nom du produit..."
+                  onkeyup="searchInTable('approvisionnements-list', this.value, [2])"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Référence</th>
+                  <th>Produit</th>
+                  <th>Fournisseur</th>
+                  <th>Quantité</th>
+                  <th>Prix d'achat</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody id="approvisionnements-list">
+                <tr>
+                  <td colspan="7" class="loading">Chargement...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Onglet Ventes -->
+        <div id="ventes" class="tab-content">
+          <div class="form-container">
+            <h3>Nouvelle vente</h3>
+            <div id="vente-message"></div>
+            <form id="form-ventes">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Produit *</label>
+                  <select name="produit_id" id="select-produit-vente" required>
+                    <option value="">Sélectionner un produit</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Quantité *</label>
+                  <input
+                    type="number"
+                    name="quantite"
+                    required
+                    placeholder="1"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Prix unitaire (CFA) *</label>
+                  <input
+                    type="number"
+                    name="prix_unitaire"
+                    step="1"
+                    required
+                    placeholder="25000"
+                    id="prix-unitaire-vente"
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Date de vente *</label>
+                  <input type="date" name="date_vente" required />
+                </div>
+                <div class="form-group">
+                  <label>Commentaire</label>
+                  <input
+                    type="text"
+                    name="commentaire"
+                    placeholder="Remarques sur la vente"
+                  />
+                </div>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-success">
+                    Enregistrer la vente
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div
+            class="form-container"
+            style="margin-bottom: 20px; padding: 15px"
+          >
+            <h4 style="margin-bottom: 15px">
+              🗓️ Filtrer les ventes par période
+            </h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Date de début</label>
+                <input type="date" id="date-debut-ventes" />
+              </div>
+              <div class="form-group">
+                <label>Date de fin</label>
+                <input type="date" id="date-fin-ventes" />
+              </div>
+              <div class="form-group">
+                <button class="btn btn-primary" onclick="filterVentesByDate()">
+                  Filtrer
+                </button>
+              </div>
+              <div class="form-group">
+                <button class="btn btn-success" onclick="resetVentesFilter()">
+                  Tout afficher
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Référence</th>
+                  <th>Produit</th>
+                  <th>Quantité</th>
+                  <th>Prix unitaire</th>
+                  <th>Total</th>
+                  <th>Commentaire</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ventes-list">
+                <tr>
+                  <td colspan="8" class="loading">Chargement...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Onglet Stock -->
+        <div id="stock" class="tab-content">
+          <h3>État du stock en temps réel</h3>
+
+          <div
+            class="form-container"
+            style="margin-bottom: 20px; padding: 15px"
+          >
+            <div class="form-row">
+              <div class="form-group">
+                <label>🔍 Rechercher dans le stock</label>
+                <input
+                  type="text"
+                  id="search-stock"
+                  placeholder="Référence, produit, statut..."
+                  onkeyup="searchInTable('stock-list', this.value, [0,1,6])"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Référence</th>
+                  <th>Produit</th>
+                  <th>Stock entré</th>
+                  <th>Stock vendu</th>
+                  <th>Stock actuel</th>
+                  <th>Valeur stock</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody id="stock-list">
+                <tr>
+                  <td colspan="7" class="loading">Chargement...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Onglet Statistiques -->
+        <div id="stats" class="tab-content">
+          <h3>Statistiques des ventes</h3>
+
+          <div class="date-filters">
+            <div class="form-group">
+              <label>Date de début</label>
+              <input type="date" id="date-debut-stats" />
+            </div>
+            <div class="form-group">
+              <label>Date de fin</label>
+              <input type="date" id="date-fin-stats" />
+            </div>
+            <div class="form-group">
+              <button class="btn btn-primary" onclick="loadStats()">
+                Actualiser
+              </button>
+            </div>
+          </div>
+
+          <div class="stats-container" id="stats-cards">
+            <div class="stat-card">
+              <h3 id="total-ventes">0 CFA</h3>
+              <p>Total des ventes</p>
+            </div>
+            <div class="stat-card">
+              <h3 id="nb-transactions">0</h3>
+              <p>Nombre de transactions</p>
+            </div>
+          </div>
+
+          <div
+            class="form-container"
+            style="margin-bottom: 20px; padding: 15px"
+          >
+            <div class="form-row">
+              <div class="form-group">
+                <label>🔍 Rechercher dans les statistiques</label>
+                <input
+                  type="text"
+                  id="search-stats"
+                  placeholder="Référence, produit..."
+                  onkeyup="searchInTable('stats-produits', this.value, [0,1])"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-container">
+            <div
+              style="
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+              "
+            >
+              <h4 style="margin-bottom: 15px; text-align: center">
+                📊 Graphique des ventes
+              </h4>
+              <canvas id="ventesChart" width="400" height="200"></canvas>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <h4 style="margin-bottom: 15px">Ventes par produit</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Référence</th>
+                  <th>Produit</th>
+                  <th>Quantité vendue</th>
+                  <th>Chiffre d'affaires</th>
+                </tr>
+              </thead>
+              <tbody id="stats-produits">
+                <tr>
+                  <td colspan="4" class="loading">Sélectionnez une période</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="renderer.js"></script>
+  </body>
+</html>
