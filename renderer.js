@@ -49,18 +49,24 @@ function showTab(tabName) {
     event.target.classList.add("active");
   }
 
-  // Actions spécifiques par onglet
+  // Actions spécifiques par onglet avec logging pour debug
   switch (tabName) {
     case "stock":
+      console.log("Activation onglet stock");
       loadStock();
       break;
     case "factures":
-      console.log("Onglet factures activé, rechargement...");
-      loadFactures();
+      console.log("Activation onglet factures - rechargement...");
+      setTimeout(() => {
+        loadFactures();
+      }, 100); // Petit délai pour s'assurer que l'onglet est bien affiché
       break;
     case "ventes":
+      console.log("Activation onglet ventes");
       renderProductsForSale();
       break;
+    default:
+      console.log(`Activation onglet: ${tabName}`);
   }
 }
 
@@ -831,15 +837,6 @@ async function loadFactures() {
 
 function displayFactures(factures) {
   const tbody = document.getElementById("factures-list");
-  if (!tbody) return;
-
-  if (factures.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6">Aucune facture enregistrée</td></tr>';
-    return;
-  }
-
-function displayFactures(factures) {
-  const tbody = document.getElementById("factures-list");
   if (!tbody) {
     console.error("Élément factures-list introuvable");
     return;
@@ -852,46 +849,50 @@ function displayFactures(factures) {
     return;
   }
 
-  tbody.innerHTML = factures
-    .map((facture) => {
-      try {
-        const dateFacture = new Date(facture.date_facture);
-        const dateCreation = facture.created_at ? new Date(facture.created_at) : null;
-        
-        // Utiliser created_at si disponible (plus précis avec l'heure), sinon date_facture
-        const displayDate = dateCreation || dateFacture;
-        
-        // Vérifier que la date est valide
-        const formattedDateTime = displayDate && !isNaN(displayDate.getTime()) 
-          ? `${displayDate.toLocaleDateString("fr-FR")} ${displayDate.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' })}`
-          : 'Date invalide';
-        
-        return `
-          <tr>
-            <td>${facture.id || 'N/A'}</td>
-            <td>${formattedDateTime}</td>
-            <td>${facture.nb_articles || 0}</td>
-            <td>${facture.total_facture ? formatCFA(facture.total_facture) : '0 CFA'}</td>
-            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-              ${facture.produits || '-'}
-            </td>
-            <td>
-              <button class="btn btn-print" onclick="printFactureDetail('${facture.id}')">🖨️ Réimprimer</button>
-              <button class="btn btn-primary" onclick="viewFactureDetail('${facture.id}')" style="margin-left: 5px; font-size: 12px;">👁️ Détail</button>
-            </td>
-          </tr>
-        `;
-      } catch (error) {
-        console.error("Erreur lors de l'affichage de la facture:", facture, error);
-        return `
-          <tr>
-            <td colspan="6" style="color: red;">Erreur d'affichage pour la facture ${facture?.id || 'inconnue'}</td>
-          </tr>
-        `;
-      }
-    })
-    .join("");
-}
+  try {
+    tbody.innerHTML = factures
+      .map((facture) => {
+        try {
+          const dateFacture = new Date(facture.date_facture);
+          const dateCreation = facture.created_at ? new Date(facture.created_at) : null;
+          
+          // Utiliser created_at si disponible (plus précis avec l'heure), sinon date_facture
+          const displayDate = dateCreation || dateFacture;
+          
+          // Vérifier que la date est valide
+          const formattedDateTime = displayDate && !isNaN(displayDate.getTime()) 
+            ? `${displayDate.toLocaleDateString("fr-FR")} ${displayDate.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' })}`
+            : 'Date invalide';
+          
+          return `
+            <tr>
+              <td>${facture.id || 'N/A'}</td>
+              <td>${formattedDateTime}</td>
+              <td>${facture.nb_articles || 0}</td>
+              <td>${facture.total_facture ? formatCFA(facture.total_facture) : '0 CFA'}</td>
+              <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                ${facture.produits || '-'}
+              </td>
+              <td>
+                <button class="btn btn-print" onclick="printFactureDetail('${facture.id}')">🖨️ Réimprimer</button>
+                <button class="btn btn-primary" onclick="viewFactureDetail('${facture.id}')" style="margin-left: 5px; font-size: 12px;">👁️ Détail</button>
+              </td>
+            </tr>
+          `;
+        } catch (error) {
+          console.error("Erreur lors de l'affichage de la facture:", facture, error);
+          return `
+            <tr>
+              <td colspan="6" style="color: red;">Erreur d'affichage pour la facture ${facture?.id || 'inconnue'}</td>
+            </tr>
+          `;
+        }
+      })
+      .join("");
+  } catch (error) {
+    console.error("Erreur globale lors de l'affichage des factures:", error);
+    tbody.innerHTML = '<tr><td colspan="6" style="color: red; text-align: center;">Erreur d\'affichage des factures</td></tr>';
+  }
 }
 
 async function viewFactureDetail(factureId) {
@@ -1093,7 +1094,7 @@ async function testFactures() {
   }
 }
 
-// Exposer la fonction de test
+// Exposer les fonctions globalement
 window.testFactures = testFactures;
 window.showTab = showTab;
 window.loadStats = loadStats;
