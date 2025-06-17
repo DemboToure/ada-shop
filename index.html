@@ -115,6 +115,191 @@
         display: block;
       }
 
+      /* Styles pour la nouvelle interface de vente unifiée */
+      .sales-container {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 20px;
+        height: calc(100vh - 300px);
+      }
+
+      .products-section {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
+      }
+
+      .cart-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        border-left: 4px solid #667eea;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .product-card {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 15px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .product-card:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+      }
+
+      .product-ref {
+        background: #667eea;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+
+      .product-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .product-category {
+        color: #6c757d;
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+
+      .product-price {
+        font-size: 18px;
+        font-weight: bold;
+        color: #28a745;
+        margin-bottom: 8px;
+      }
+
+      .product-stock {
+        font-size: 14px;
+        color: #6c757d;
+        margin-bottom: 10px;
+      }
+
+      .add-to-cart-btn {
+        width: 100%;
+        padding: 8px;
+        background: linear-gradient(45deg, #28a745, #20c997);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .add-to-cart-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+      }
+
+      .cart-header {
+        background: #667eea;
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .cart-items {
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 15px;
+      }
+
+      .cart-item {
+        background: white;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+        border-left: 4px solid #667eea;
+      }
+
+      .cart-item-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 8px;
+      }
+
+      .cart-item-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+      }
+
+      .quantity-input, .price-input {
+        width: 60px;
+        padding: 4px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 12px;
+      }
+
+      .remove-btn {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 4px 6px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 10px;
+      }
+
+      .cart-total {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        text-align: center;
+        border: 2px solid #28a745;
+      }
+
+      .total-amount {
+        font-size: 20px;
+        font-weight: bold;
+        color: #28a745;
+      }
+
+      .cart-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .empty-cart {
+        text-align: center;
+        color: #6c757d;
+        font-style: italic;
+        padding: 30px 15px;
+      }
+
+      /* Styles existants */
       .form-container {
         background: #f8f9fa;
         padding: 20px;
@@ -190,6 +375,11 @@
       .btn-success:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
       }
 
       .table-container {
@@ -300,6 +490,94 @@
         box-shadow: 0 3px 10px rgba(23, 162, 184, 0.3);
       }
 
+      .btn-edit {
+        background: linear-gradient(45deg, #ffc107, #e0a800);
+        color: #212529;
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+        background-color: white;
+        margin: 5% auto;
+        padding: 20px;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0;
+        margin: 0 0 10px 10px;
+        border: none;
+        background: none;
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        z-index: 1001;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: #000;
+        text-decoration: none;
+      }
+
+      .invoice-header {
+        text-align: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 20px;
+      }
+
+      .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+
+      .invoice-table th,
+      .invoice-table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .invoice-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+      }
+
+      .invoice-total {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: right;
+        margin-top: 20px;
+      }
+
       @media print {
         body * {
           visibility: hidden;
@@ -313,6 +591,17 @@
           left: 0;
           top: 0;
           width: 100%;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .sales-container {
+          grid-template-columns: 1fr;
+          height: auto;
+        }
+        
+        .products-grid {
+          grid-template-columns: 1fr;
         }
       }
     </style>
@@ -337,6 +626,7 @@
           📥 Approvisionnement
         </button>
         <button class="nav-tab" onclick="showTab('ventes')">💰 Ventes</button>
+        <button class="nav-tab" onclick="showTab('factures')">🧾 Factures</button>
         <button class="nav-tab" onclick="showTab('stock')">
           📊 Stock Actuel
         </button>
@@ -531,87 +821,144 @@
           </div>
         </div>
 
-        <!-- Onglet Ventes -->
+        <!-- Onglet Ventes - Interface unifiée avec panier -->
         <div id="ventes" class="tab-content">
-          <div class="form-container">
-            <h3>Nouvelle vente</h3>
-            <div id="vente-message"></div>
-            <form id="form-ventes">
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Produit *</label>
-                  <select name="produit_id" id="select-produit-vente" required>
-                    <option value="">Sélectionner un produit</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Quantité *</label>
-                  <input
-                    type="number"
-                    name="quantite"
-                    required
-                    placeholder="1"
-                  />
-                </div>
-                <div class="form-group">
-                  <label>Prix unitaire (CFA) *</label>
-                  <input
-                    type="number"
-                    name="prix_unitaire"
-                    step="1"
-                    required
-                    placeholder="25000"
-                    id="prix-unitaire-vente"
-                  />
+          <div id="vente-message"></div>
+          <div class="sales-container">
+            <!-- Section des produits -->
+            <div class="products-section">
+              <h3>📦 Sélection des produits</h3>
+              
+              <div class="form-group" style="margin-bottom: 15px;">
+                <input 
+                  type="text" 
+                  id="product-search" 
+                  class="form-group input" 
+                  placeholder="🔍 Rechercher un produit par nom ou référence..."
+                  style="width: 100%; padding: 12px;"
+                >
+              </div>
+
+              <div id="products-grid" class="products-grid">
+                <!-- Les produits seront chargés ici -->
+              </div>
+            </div>
+
+            <!-- Section du panier -->
+            <div class="cart-section">
+              <div class="cart-header">
+                <h3>🛒 Panier de vente</h3>
+                <span id="cart-count">0 articles</span>
+              </div>
+
+              <div id="cart-items" class="cart-items">
+                <div class="empty-cart">
+                  Aucun produit dans le panier<br>
+                  Sélectionnez des produits à gauche
                 </div>
               </div>
+
+              <div class="cart-total">
+                <div>Total à payer</div>
+                <div id="cart-total" class="total-amount">0 CFA</div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 15px;">
+                <label>Commentaire</label>
+                <input 
+                  type="text" 
+                  id="batch-comment" 
+                  placeholder="Remarques sur cette vente"
+                  style="width: 100%;"
+                >
+              </div>
+
+              <div class="cart-actions">
+                <button id="clear-cart" class="btn btn-secondary">
+                  🗑️ Vider
+                </button>
+                <button id="process-sale" class="btn btn-success">
+                  💰 Finaliser
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Historique des ventes -->
+          <div style="margin-top: 30px;">
+            <h3>Historique des ventes</h3>
+            <div
+              class="form-container"
+              style="margin-bottom: 20px; padding: 15px"
+            >
+              <h4 style="margin-bottom: 15px">
+                🗓️ Filtrer les ventes par période
+              </h4>
               <div class="form-row">
                 <div class="form-group">
-                  <label>Date de vente *</label>
-                  <input type="date" name="date_vente" required />
+                  <label>Date de début</label>
+                  <input type="date" id="date-debut-ventes" />
                 </div>
                 <div class="form-group">
-                  <label>Commentaire</label>
-                  <input
-                    type="text"
-                    name="commentaire"
-                    placeholder="Remarques sur la vente"
-                  />
+                  <label>Date de fin</label>
+                  <input type="date" id="date-fin-ventes" />
                 </div>
                 <div class="form-group">
-                  <button type="submit" class="btn btn-success">
-                    Enregistrer la vente
+                  <button class="btn btn-primary" onclick="filterVentesByDate()">
+                    Filtrer
+                  </button>
+                </div>
+                <div class="form-group">
+                  <button class="btn btn-success" onclick="resetVentesFilter()">
+                    Tout afficher
                   </button>
                 </div>
               </div>
-            </form>
+            </div>
+
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Référence</th>
+                    <th>Produit</th>
+                    <th>Quantité</th>
+                    <th>Prix unitaire</th>
+                    <th>Total</th>
+                    <th>Commentaire</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="ventes-list">
+                  <tr>
+                    <td colspan="8" class="loading">Chargement...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
+        </div>
+
+        <!-- Nouvel onglet Factures -->
+        <div id="factures" class="tab-content">
+          <h3>Historique des factures de vente par lot</h3>
+
+          <div id="facture-message"></div>
 
           <div
             class="form-container"
             style="margin-bottom: 20px; padding: 15px"
           >
-            <h4 style="margin-bottom: 15px">
-              🗓️ Filtrer les ventes par période
-            </h4>
             <div class="form-row">
               <div class="form-group">
-                <label>Date de début</label>
-                <input type="date" id="date-debut-ventes" />
-              </div>
-              <div class="form-group">
-                <label>Date de fin</label>
-                <input type="date" id="date-fin-ventes" />
-              </div>
-              <div class="form-group">
-                <button class="btn btn-primary" onclick="filterVentesByDate()">
-                  Filtrer
-                </button>
-              </div>
-              <div class="form-group">
-                <button class="btn btn-success" onclick="resetVentesFilter()">
-                  Tout afficher
-                </button>
+                <label>🔍 Rechercher une facture</label>
+                <input
+                  type="text"
+                  id="search-factures"
+                  placeholder="N° facture, produits..."
+                  onkeyup="searchInTable('factures-list', this.value, [0,4])"
+                />
               </div>
             </div>
           </div>
@@ -620,19 +967,17 @@
             <table>
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Référence</th>
-                  <th>Produit</th>
-                  <th>Quantité</th>
-                  <th>Prix unitaire</th>
+                  <th>N° Facture</th>
+                  <th>Date & Heure</th>
+                  <th>Nb articles</th>
                   <th>Total</th>
-                  <th>Commentaire</th>
+                  <th>Produits</th>
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody id="ventes-list">
+              <tbody id="factures-list">
                 <tr>
-                  <td colspan="8" class="loading">Chargement...</td>
+                  <td colspan="6" class="loading">Chargement...</td>
                 </tr>
               </tbody>
             </table>
@@ -764,6 +1109,19 @@
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pour la facture -->
+    <div id="invoice-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="invoice-content">
+          <!-- Le contenu de la facture sera généré ici -->
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+          <button id="print-invoice" class="btn btn-success">🖨️ Imprimer</button>
         </div>
       </div>
     </div>

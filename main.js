@@ -35,9 +35,10 @@ function initDatabase() {
             FOREIGN KEY (produit_id) REFERENCES produits (id)
         )`);
 
-    // Table des ventes
+    // Table des ventes (modifiée pour supporter les ventes par lot)
     db.run(`CREATE TABLE IF NOT EXISTS ventes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            facture_id TEXT,
             produit_id INTEGER,
             quantite INTEGER,
             prix_unitaire REAL,
@@ -46,6 +47,16 @@ function initDatabase() {
             date_vente DATE,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (produit_id) REFERENCES produits (id)
+        )`);
+
+    // Nouvelle table pour les factures de vente par lot
+    db.run(`CREATE TABLE IF NOT EXISTS factures (
+            id TEXT PRIMARY KEY,
+            total_facture REAL,
+            nb_articles INTEGER,
+            commentaire TEXT,
+            date_facture DATE,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
 
     // Insertion de données d'exemple si la table est vide
@@ -95,7 +106,7 @@ function createWindow() {
   mainWindow.loadFile("index.html");
 
   // Ouvre les DevTools en mode développement
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
@@ -142,6 +153,20 @@ ipcMain.handle("add-produit", (event, produit) => {
   });
 });
 
+ipcMain.handle("update-produit", (event, produit) => {
+  return new Promise((resolve, reject) => {
+    const { id, reference, nom, categorie, prix_vente, stock_minimum } = produit;
+    db.run(
+      "UPDATE produits SET reference = ?, nom = ?, categorie = ?, prix_vente = ?, stock_minimum = ? WHERE id = ?",
+      [reference, nom, categorie, prix_vente, stock_minimum, id],
+      function (err) {
+        if (err) reject(err);
+        else resolve({ changes: this.changes });
+      }
+    );
+  });
+});
+
 // Approvisionnements
 ipcMain.handle("get-approvisionnements", () => {
   return new Promise((resolve, reject) => {
@@ -174,7 +199,7 @@ ipcMain.handle("add-approvisionnement", (event, appro) => {
   });
 });
 
-// Ventes
+// Ventes individuelles (ancien système)
 ipcMain.handle("get-ventes", () => {
   return new Promise((resolve, reject) => {
     db.all(
@@ -194,15 +219,123 @@ ipcMain.handle("get-ventes", () => {
 
 ipcMain.handle("add-vente", (event, vente) => {
   return new Promise((resolve, reject) => {
-    const { produit_id, quantite, prix_unitaire, commentaire, date_vente } =
-      vente;
+    const { produit_id, quantite, prix_unitaire, commentaire, date_vente } = vente;
     const total = quantite * prix_unitaire;
+    const facture_id = null; // Vente individuelle
+    
     db.run(
-      "INSERT INTO ventes (produit_id, quantite, prix_unitaire, total, commentaire, date_vente) VALUES (?, ?, ?, ?, ?, ?)",
-      [produit_id, quantite, prix_unitaire, total, commentaire, date_vente],
+      "INSERT INTO ventes (facture_id, produit_id, quantite, prix_unitaire, total, commentaire, date_vente) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [facture_id, produit_id, quantite, prix_unitaire, total, commentaire, date_vente],
       function (err) {
         if (err) reject(err);
         else resolve({ id: this.lastID });
+      }
+    );
+  });
+});
+
+// Nouvelles fonctions pour les ventes par lot
+ipcMain.handle("add-vente-lot", (event, venteData) => {
+  return new Promise((resolve, reject) => {
+    const { items, commentaire, date_vente } = venteData;
+    const factureId = `FAC-${Date.now()}`;
+    
+    // Calculer le total de la facture
+    const totalFacture = items.reduce((sum, item) => sum + (item.quantite * item.prix_unitaire), 0);
+    const nbArticles = items.reduce((sum, item) => sum + item.quantite, 0);
+    
+    db.serialize(() => {
+      // Commencer une transaction
+      db.run("BEGIN TRANSACTION");
+      
+      try {
+        // Insérer la facture
+        db.run(
+          "INSERT INTO factures (id, total_facture, nb_articles, commentaire, date_facture) VALUES (?, ?, ?, ?, ?)",
+          [factureId, totalFacture, nbArticles, commentaire, date_vente],
+          function (err) {
+            if (err) {
+              db.run("ROLLBACK");
+              reject(err);
+              return;
+            }
+          }
+        );
+        
+        // Insérer chaque vente
+        let completed = 0;
+        items.forEach((item) => {
+          const total = item.quantite * item.prix_unitaire;
+          db.run(
+            "INSERT INTO ventes (facture_id, produit_id, quantite, prix_unitaire, total, commentaire, date_vente) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [factureId, item.produit_id, item.quantite, item.prix_unitaire, total, commentaire, date_vente],
+            function (err) {
+              if (err) {
+                db.run("ROLLBACK");
+                reject(err);
+                return;
+              }
+              
+              completed++;
+              if (completed === items.length) {
+                db.run("COMMIT");
+                resolve({ factureId, totalFacture, nbArticles });
+              }
+            }
+          );
+        });
+        
+      } catch (error) {
+        db.run("ROLLBACK");
+        reject(error);
+      }
+    });
+  });
+});
+
+// Obtenir les factures
+ipcMain.handle("get-factures", () => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `
+            SELECT f.*, 
+                   COUNT(v.id) as nb_lignes,
+                   GROUP_CONCAT(p.nom, ', ') as produits
+            FROM factures f
+            LEFT JOIN ventes v ON f.id = v.facture_id
+            LEFT JOIN produits p ON v.produit_id = p.id
+            GROUP BY f.id, f.total_facture, f.nb_articles, f.commentaire, f.date_facture, f.created_at
+            ORDER BY f.created_at DESC
+        `,
+      (err, rows) => {
+        if (err) {
+          console.error("Erreur SQL get-factures:", err);
+          reject(err);
+        } else {
+          console.log("Factures chargées:", rows?.length || 0);
+          resolve(rows || []);
+        }
+      }
+    );
+  });
+});
+
+// Obtenir le détail d'une facture
+ipcMain.handle("get-facture-detail", (event, factureId) => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `
+            SELECT v.*, p.reference, p.nom, f.date_facture, f.total_facture, f.commentaire as commentaire_facture
+            FROM ventes v
+            JOIN produits p ON v.produit_id = p.id
+            JOIN factures f ON v.facture_id = f.id
+            WHERE v.facture_id = ?
+            ORDER BY p.nom
+        `,
+      [factureId],
+      (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
       }
     );
   });
@@ -243,8 +376,10 @@ ipcMain.handle("get-stats", (event, dateDebut, dateFin) => {
     const queries = [
       // Total des ventes
       `SELECT COALESCE(SUM(total), 0) as total_ventes FROM ventes WHERE date_vente BETWEEN ? AND ?`,
-      // Nombre de transactions
-      `SELECT COUNT(*) as nb_transactions FROM ventes WHERE date_vente BETWEEN ? AND ?`,
+      // Nombre de transactions (incluant les factures)
+      `SELECT 
+         (SELECT COUNT(*) FROM ventes WHERE date_vente BETWEEN ? AND ? AND facture_id IS NULL) +
+         (SELECT COUNT(*) FROM factures WHERE date_facture BETWEEN ? AND ?) as nb_transactions`,
       // Ventes par produit
       `SELECT p.reference, p.nom, SUM(v.quantite) as qte_vendue, SUM(v.total) as ca_total
              FROM ventes v 
@@ -261,7 +396,7 @@ ipcMain.handle("get-stats", (event, dateDebut, dateFin) => {
         )
       ),
       new Promise((res, rej) =>
-        db.get(queries[1], [dateDebut, dateFin], (err, row) =>
+        db.get(queries[1], [dateDebut, dateFin, dateDebut, dateFin], (err, row) =>
           err ? rej(err) : res(row)
         )
       ),
@@ -279,20 +414,5 @@ ipcMain.handle("get-stats", (event, dateDebut, dateFin) => {
         });
       })
       .catch(reject);
-  });
-});
-
-ipcMain.handle("update-produit", (event, produit) => {
-  return new Promise((resolve, reject) => {
-    const { id, reference, nom, categorie, prix_vente, stock_minimum } =
-      produit;
-    db.run(
-      "UPDATE produits SET reference = ?, nom = ?, categorie = ?, prix_vente = ?, stock_minimum = ? WHERE id = ?",
-      [reference, nom, categorie, prix_vente, stock_minimum, id],
-      function (err) {
-        if (err) reject(err);
-        else resolve({ changes: this.changes });
-      }
-    );
   });
 });
