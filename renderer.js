@@ -970,7 +970,7 @@ function resetVentesFilter() {
   showMessage("vente-message", "Toutes les ventes sont maintenant affichées", "success");
 }
 
-// ==================== GESTION DES STATISTIQUES ====================
+// ==================== GESTION DES STATISTIQUES (VERSION CORRIGÉE) ====================
 async function loadStats() {
   const dateDebut = document.getElementById("date-debut-stats")?.value;
   const dateFin = document.getElementById("date-fin-stats")?.value;
@@ -981,22 +981,52 @@ async function loadStats() {
   }
 
   try {
+    console.log("=== CHARGEMENT STATISTIQUES ===");
+    console.log("Période:", dateDebut, "à", dateFin);
+    
     const stats = await ipcRenderer.invoke("get-stats", dateDebut, dateFin);
+    console.log("Statistiques reçues:", stats);
+    
     displayStats(stats);
   } catch (error) {
     console.error("Erreur lors du chargement des statistiques:", error);
+    showMessage("stats-message", "Erreur lors du chargement des statistiques: " + error.message, "error");
   }
 }
 
 function displayStats(stats) {
-  setValueSafely("total-ventes", formatCFA(stats.totalVentes));
-  setValueSafely("nb-transactions", stats.nbTransactions);
+  console.log("=== AFFICHAGE STATISTIQUES ===");
+  console.log("Total ventes:", stats.totalVentes);
+  console.log("Nb transactions:", stats.nbTransactions);
+  console.log("Ventes par produit:", stats.ventesParProduit);
+
+  // Corriger l'affichage des totaux - utiliser textContent au lieu de value
+  const totalVentesElement = document.getElementById("total-ventes");
+  const nbTransactionsElement = document.getElementById("nb-transactions");
+  
+  if (totalVentesElement) {
+    totalVentesElement.textContent = formatCFA(stats.totalVentes || 0);
+    console.log("Total ventes affiché:", totalVentesElement.textContent);
+  } else {
+    console.error("Élément total-ventes introuvable");
+  }
+  
+  if (nbTransactionsElement) {
+    nbTransactionsElement.textContent = stats.nbTransactions || 0;
+    console.log("Nb transactions affiché:", nbTransactionsElement.textContent);
+  } else {
+    console.error("Élément nb-transactions introuvable");
+  }
 
   const tbody = document.getElementById("stats-produits");
-  if (!tbody) return;
+  if (!tbody) {
+    console.error("Élément stats-produits introuvable");
+    return;
+  }
 
-  if (stats.ventesParProduit.length === 0) {
+  if (!stats.ventesParProduit || stats.ventesParProduit.length === 0) {
     tbody.innerHTML = '<tr><td colspan="4">Aucune vente sur cette période</td></tr>';
+    console.log("Aucune vente trouvée pour cette période");
     return;
   }
 
@@ -1011,12 +1041,36 @@ function displayStats(stats) {
     `)
     .join("");
 
+  console.log("Tableau des ventes par produit mis à jour");
   createChart(stats.ventesParProduit);
+}
+
+// Version corrigée de setValueSafely pour gérer les différents types d'éléments
+function setValueSafely(selector, value) {
+  const element = typeof selector === 'string' 
+    ? document.getElementById(selector) || document.querySelector(selector)
+    : selector;
+  
+  if (element) {
+    // Si c'est un input, textarea ou select, utiliser value
+    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') {
+      element.value = value;
+    } 
+    // Sinon, utiliser textContent
+    else {
+      element.textContent = value;
+    }
+  } else {
+    console.warn(`Élément introuvable: ${selector}`);
+  }
 }
 
 function createChart(data) {
   const ctx = document.getElementById("ventesChart")?.getContext("2d");
-  if (!ctx) return;
+  if (!ctx) {
+    console.error("Canvas ventesChart introuvable");
+    return;
+  }
 
   if (chartInstance) {
     chartInstance.destroy();

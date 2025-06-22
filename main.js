@@ -106,7 +106,7 @@ function createWindow() {
   mainWindow.loadFile("index.html");
 
   // Ouvre les DevTools en mode développement
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
