@@ -9,7 +9,9 @@
     "build-win": "electron-builder --win",
     "build-mac": "electron-builder --mac",
     "build-linux": "electron-builder --linux",
-    "dist": "npm run build"
+    "dist": "npm run build",
+    "rebuild": "electron-rebuild",
+    "postinstall": "electron-builder install-app-deps"
   },
   "build": {
     "appId": "com.adaglobalservice.gestion",
@@ -66,9 +68,10 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^27.0.0",
-    "electron-builder": "^24.6.4"
+    "electron-builder": "^24.6.4",
+    "electron-rebuild": "^3.2.9"
   },
   "dependencies": {
-    "sqlite3": "^5.1.6"
+    "better-sqlite3": "^9.2.2"
   }
 }

@@ -253,7 +253,8 @@
         font-size: 12px;
       }
 
-      .quantity-input, .price-input {
+      .quantity-input,
+      .price-input {
         width: 60px;
         padding: 4px;
         border: 1px solid #dee2e6;
@@ -599,7 +600,7 @@
           grid-template-columns: 1fr;
           height: auto;
         }
-        
+
         .products-grid {
           grid-template-columns: 1fr;
         }
@@ -626,7 +627,9 @@
           📥 Approvisionnement
         </button>
         <button class="nav-tab" onclick="showTab('ventes')">💰 Ventes</button>
-        <button class="nav-tab" onclick="showTab('factures')">🧾 Factures</button>
+        <button class="nav-tab" onclick="showTab('factures')">
+          🧾 Factures
+        </button>
         <button class="nav-tab" onclick="showTab('stock')">
           📊 Stock Actuel
         </button>
@@ -828,15 +831,15 @@
             <!-- Section des produits -->
             <div class="products-section">
               <h3>📦 Sélection des produits</h3>
-              
-              <div class="form-group" style="margin-bottom: 15px;">
-                <input 
-                  type="text" 
-                  id="product-search" 
-                  class="form-group input" 
+
+              <div class="form-group" style="margin-bottom: 15px">
+                <input
+                  type="text"
+                  id="product-search"
+                  class="form-group input"
                   placeholder="🔍 Rechercher un produit par nom ou référence..."
-                  style="width: 100%; padding: 12px;"
-                >
+                  style="width: 100%; padding: 12px"
+                />
               </div>
 
               <div id="products-grid" class="products-grid">
@@ -853,7 +856,7 @@
 
               <div id="cart-items" class="cart-items">
                 <div class="empty-cart">
-                  Aucun produit dans le panier<br>
+                  Aucun produit dans le panier<br />
                   Sélectionnez des produits à gauche
                 </div>
               </div>
@@ -863,14 +866,14 @@
                 <div id="cart-total" class="total-amount">0 CFA</div>
               </div>
 
-              <div class="form-group" style="margin-bottom: 15px;">
+              <div class="form-group" style="margin-bottom: 15px">
                 <label>Commentaire</label>
-                <input 
-                  type="text" 
-                  id="batch-comment" 
+                <input
+                  type="text"
+                  id="batch-comment"
                   placeholder="Remarques sur cette vente"
-                  style="width: 100%;"
-                >
+                  style="width: 100%"
+                />
               </div>
 
               <div class="cart-actions">
@@ -885,7 +888,7 @@
           </div>
 
           <!-- Historique des ventes -->
-          <div style="margin-top: 30px;">
+          <div style="margin-top: 30px">
             <h3>Historique des ventes</h3>
             <div
               class="form-container"
@@ -904,7 +907,10 @@
                   <input type="date" id="date-fin-ventes" />
                 </div>
                 <div class="form-group">
-                  <button class="btn btn-primary" onclick="filterVentesByDate()">
+                  <button
+                    class="btn btn-primary"
+                    onclick="filterVentesByDate()"
+                  >
                     Filtrer
                   </button>
                 </div>
@@ -1120,8 +1126,10 @@
         <div id="invoice-content">
           <!-- Le contenu de la facture sera généré ici -->
         </div>
-        <div style="text-align: center; margin-top: 20px;">
-          <button id="print-invoice" class="btn btn-success">🖨️ Imprimer</button>
+        <div style="text-align: center; margin-top: 20px">
+          <button id="print-invoice" class="btn btn-success">
+            🖨️ Imprimer
+          </button>
         </div>
       </div>
     </div>
