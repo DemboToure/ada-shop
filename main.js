@@ -511,3 +511,26 @@ ipcMain.handle("get-stats", (event, dateDebut, dateFin) => {
     throw error;
   }
 });
+
+// Nouveau handler pour la mise à jour des approvisionnements
+ipcMain.handle("update-approvisionnement", (event, appro) => {
+  try {
+    const { id, produit_id, fournisseur, quantite, prix_achat, date_appro } =
+      appro;
+    const stmt = db.prepare(
+      "UPDATE approvisionnements SET produit_id = ?, fournisseur = ?, quantite = ?, prix_achat = ?, date_appro = ? WHERE id = ?"
+    );
+    const result = stmt.run(
+      produit_id,
+      fournisseur,
+      quantite,
+      prix_achat,
+      date_appro,
+      id
+    );
+    return { changes: result.changes };
+  } catch (error) {
+    console.error("Erreur update-approvisionnement:", error);
+    throw error;
+  }
+});

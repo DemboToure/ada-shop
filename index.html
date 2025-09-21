@@ -605,6 +605,25 @@
           grid-template-columns: 1fr;
         }
       }
+
+      .edit-input {
+        padding: 4px 6px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-size: 12px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .edit-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+      }
+
+      #approvisionnements-list td {
+        vertical-align: middle;
+      }
     </style>
   </head>
   <body>
@@ -813,11 +832,12 @@
                   <th>Quantité</th>
                   <th>Prix d'achat</th>
                   <th>Total</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="approvisionnements-list">
                 <tr>
-                  <td colspan="7" class="loading">Chargement...</td>
+                  <td colspan="8" class="loading">Chargement...</td>
                 </tr>
               </tbody>
             </table>
@@ -927,7 +947,8 @@
                 <thead>
                   <tr>
                     <th>Date</th>
-                    <th>Référence</th>
+                    <th>Réf Fac</th>
+                    <th>Réf Produit</th>
                     <th>Produit</th>
                     <th>Quantité</th>
                     <th>Prix unitaire</th>

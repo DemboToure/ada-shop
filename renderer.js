@@ -44,7 +44,7 @@ function showTab(tabName) {
   if (targetTab) {
     targetTab.classList.add("active");
   }
-  
+
   if (event && event.target) {
     event.target.classList.add("active");
   }
@@ -85,44 +85,49 @@ function setupFormEventListeners() {
   }
 
   // Formulaire approvisionnement
-  const formApprovisionnement = document.getElementById("form-approvisionnement");
+  const formApprovisionnement = document.getElementById(
+    "form-approvisionnement"
+  );
   if (formApprovisionnement) {
-    formApprovisionnement.addEventListener("submit", handleAddApprovisionnement);
+    formApprovisionnement.addEventListener(
+      "submit",
+      handleAddApprovisionnement
+    );
   }
 }
 
 function setupSalesEventListeners() {
   // Recherche de produits
-  const productSearch = document.getElementById('product-search');
+  const productSearch = document.getElementById("product-search");
   if (productSearch) {
-    productSearch.addEventListener('input', (e) => {
+    productSearch.addEventListener("input", (e) => {
       renderProductsForSale(e.target.value);
     });
   }
 
   // Actions du panier
-  const clearCartBtn = document.getElementById('clear-cart');
-  const processSaleBtn = document.getElementById('process-sale');
-  
+  const clearCartBtn = document.getElementById("clear-cart");
+  const processSaleBtn = document.getElementById("process-sale");
+
   if (clearCartBtn) {
-    clearCartBtn.addEventListener('click', clearCart);
+    clearCartBtn.addEventListener("click", clearCart);
   }
-  
+
   if (processSaleBtn) {
-    processSaleBtn.addEventListener('click', processSale);
+    processSaleBtn.addEventListener("click", processSale);
   }
 }
 
 function setupModalEventListeners() {
   // Gérer la fermeture de la modal de plusieurs façons
-  document.addEventListener('click', (e) => {
-    const modal = document.getElementById('invoice-modal');
-    
+  document.addEventListener("click", (e) => {
+    const modal = document.getElementById("invoice-modal");
+
     // Fermer en cliquant sur le X
-    if (e.target.classList.contains('close')) {
+    if (e.target.classList.contains("close")) {
       closeModal();
     }
-    
+
     // Fermer en cliquant en dehors de la modal
     if (e.target === modal) {
       closeModal();
@@ -130,15 +135,15 @@ function setupModalEventListeners() {
   });
 
   // Fermer avec la touche Escape
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
       closeModal();
     }
   });
 
   // Bouton d'impression
-  document.addEventListener('click', (e) => {
-    if (e.target.id === 'print-invoice') {
+  document.addEventListener("click", (e) => {
+    if (e.target.id === "print-invoice") {
       printInvoice();
     }
   });
@@ -151,21 +156,24 @@ function initDateDefaults() {
     new Date().getFullYear(),
     new Date().getMonth(),
     1
-  ).toISOString().split("T")[0];
+  )
+    .toISOString()
+    .split("T")[0];
 
   // Définir les dates avec vérification
   setValueSafely('input[name="date_appro"]', today);
-  setValueSafely('date-debut-stats', firstDayOfMonth);
-  setValueSafely('date-fin-stats', today);
-  setValueSafely('date-debut-ventes', firstDayOfMonth);
-  setValueSafely('date-fin-ventes', today);
+  setValueSafely("date-debut-stats", firstDayOfMonth);
+  setValueSafely("date-fin-stats", today);
+  setValueSafely("date-debut-ventes", firstDayOfMonth);
+  setValueSafely("date-fin-ventes", today);
 }
 
 function setValueSafely(selector, value) {
-  const element = typeof selector === 'string' 
-    ? document.getElementById(selector) || document.querySelector(selector)
-    : selector;
-  
+  const element =
+    typeof selector === "string"
+      ? document.getElementById(selector) || document.querySelector(selector)
+      : selector;
+
   if (element) {
     element.value = value;
   }
@@ -175,7 +183,7 @@ function setValueSafely(selector, value) {
 function showMessage(containerId, message, type = "success") {
   const container = document.getElementById(containerId);
   if (!container) return;
-  
+
   container.innerHTML = `<div class="${type}-message">${message}</div>`;
   setTimeout(() => {
     container.innerHTML = "";
@@ -189,7 +197,7 @@ function formatCFA(montant) {
 function searchInTable(tableId, searchValue, columnIndexes) {
   const table = document.getElementById(tableId);
   if (!table) return;
-  
+
   const rows = table.getElementsByTagName("tr");
 
   for (let i = 0; i < rows.length; i++) {
@@ -199,7 +207,8 @@ function searchInTable(tableId, searchValue, columnIndexes) {
 
       for (let colIndex of columnIndexes) {
         if (cells[colIndex]) {
-          const cellText = cells[colIndex].textContent || cells[colIndex].innerText;
+          const cellText =
+            cells[colIndex].textContent || cells[colIndex].innerText;
           if (cellText.toLowerCase().includes(searchValue.toLowerCase())) {
             found = true;
             break;
@@ -234,7 +243,8 @@ function displayProduits() {
   }
 
   tbody.innerHTML = produits
-    .map((produit) => `
+    .map(
+      (produit) => `
       <tr id="produit-${produit.id}">
         <td>${produit.reference}</td>
         <td>${produit.nom}</td>
@@ -247,7 +257,8 @@ function displayProduits() {
           </button>
         </td>
       </tr>
-    `)
+    `
+    )
     .join("");
 }
 
@@ -255,18 +266,24 @@ function updateProduitsSelects() {
   const selectAppro = document.getElementById("select-produit-appro");
   if (!selectAppro) return;
 
-  const sortedProduits = [...produits].sort((a, b) => a.nom.localeCompare(b.nom));
+  const sortedProduits = [...produits].sort((a, b) =>
+    a.nom.localeCompare(b.nom)
+  );
   const options = sortedProduits
-    .map((produit) => `<option value="${produit.id}">${produit.nom} (${produit.reference})</option>`)
+    .map(
+      (produit) =>
+        `<option value="${produit.id}">${produit.nom} (${produit.reference})</option>`
+    )
     .join("");
 
-  selectAppro.innerHTML = '<option value="">Sélectionner un produit</option>' + options;
+  selectAppro.innerHTML =
+    '<option value="">Sélectionner un produit</option>' + options;
 }
 
 async function handleAddProduit(e) {
   e.preventDefault();
   const formData = new FormData(e.target);
-  
+
   try {
     const produit = {
       reference: formData.get("reference"),
@@ -281,7 +298,11 @@ async function handleAddProduit(e) {
     e.target.reset();
     await loadProduits();
   } catch (error) {
-    showMessage("produit-message", "Erreur lors de l'ajout du produit: " + error.message, "error");
+    showMessage(
+      "produit-message",
+      "Erreur lors de l'ajout du produit: " + error.message,
+      "error"
+    );
   }
 }
 
@@ -293,11 +314,21 @@ function editProduit(produitId) {
   if (!row) return;
 
   row.innerHTML = `
-    <td><input type="text" class="edit-input" value="${produit.reference}" id="edit-ref-${produitId}"></td>
-    <td><input type="text" class="edit-input" value="${produit.nom}" id="edit-nom-${produitId}"></td>
-    <td><input type="text" class="edit-input" value="${produit.categorie || ""}" id="edit-cat-${produitId}"></td>
-    <td><input type="number" class="edit-input" value="${produit.prix_vente || ""}" step="1" id="edit-prix-${produitId}"></td>
-    <td><input type="number" class="edit-input" value="${produit.stock_minimum || ""}" id="edit-stock-${produitId}"></td>
+    <td><input type="text" class="edit-input" value="${
+      produit.reference
+    }" id="edit-ref-${produitId}"></td>
+    <td><input type="text" class="edit-input" value="${
+      produit.nom
+    }" id="edit-nom-${produitId}"></td>
+    <td><input type="text" class="edit-input" value="${
+      produit.categorie || ""
+    }" id="edit-cat-${produitId}"></td>
+    <td><input type="number" class="edit-input" value="${
+      produit.prix_vente || ""
+    }" step="1" id="edit-prix-${produitId}"></td>
+    <td><input type="number" class="edit-input" value="${
+      produit.stock_minimum || ""
+    }" id="edit-stock-${produitId}"></td>
     <td>
       <button class="btn btn-success" onclick="saveProduit(${produitId})" style="margin-right: 5px; padding: 5px 10px; font-size: 12px;">💾 Sauver</button>
       <button class="btn btn-primary" onclick="cancelEdit(${produitId})" style="padding: 5px 10px; font-size: 12px;">❌ Annuler</button>
@@ -312,8 +343,11 @@ async function saveProduit(produitId) {
       reference: document.getElementById(`edit-ref-${produitId}`).value,
       nom: document.getElementById(`edit-nom-${produitId}`).value,
       categorie: document.getElementById(`edit-cat-${produitId}`).value,
-      prix_vente: parseFloat(document.getElementById(`edit-prix-${produitId}`).value) || 0,
-      stock_minimum: parseInt(document.getElementById(`edit-stock-${produitId}`).value) || 0,
+      prix_vente:
+        parseFloat(document.getElementById(`edit-prix-${produitId}`).value) ||
+        0,
+      stock_minimum:
+        parseInt(document.getElementById(`edit-stock-${produitId}`).value) || 0,
     };
 
     if (!produitModifie.reference || !produitModifie.nom) {
@@ -325,7 +359,11 @@ async function saveProduit(produitId) {
     showMessage("produit-message", "Produit modifié avec succès !");
     await loadProduits();
   } catch (error) {
-    showMessage("produit-message", "Erreur lors de la modification: " + error.message, "error");
+    showMessage(
+      "produit-message",
+      "Erreur lors de la modification: " + error.message,
+      "error"
+    );
   }
 }
 
@@ -336,41 +374,175 @@ function cancelEdit(produitId) {
 // ==================== GESTION DES APPROVISIONNEMENTS ====================
 async function loadApprovisionnements() {
   try {
-    const approvisionnements = await ipcRenderer.invoke("get-approvisionnements");
+    const approvisionnements = await ipcRenderer.invoke(
+      "get-approvisionnements"
+    );
     displayApprovisionnements(approvisionnements);
   } catch (error) {
     console.error("Erreur lors du chargement des approvisionnements:", error);
   }
 }
 
+// Fonction modifiée pour afficher les approvisionnements avec bouton modifier
 function displayApprovisionnements(approvisionnements) {
   const tbody = document.getElementById("approvisionnements-list");
   if (!tbody) return;
 
   if (approvisionnements.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7">Aucun approvisionnement enregistré</td></tr>';
+    tbody.innerHTML =
+      '<tr><td colspan="8">Aucun approvisionnement enregistré</td></tr>';
     return;
   }
 
   tbody.innerHTML = approvisionnements
-    .map((appro) => `
-      <tr>
+    .map(
+      (appro) => `
+      <tr id="appro-${appro.id}">
         <td>${new Date(appro.date_appro).toLocaleDateString("fr-FR")}</td>
         <td>${appro.reference}</td>
         <td>${appro.nom}</td>
         <td>${appro.fournisseur || "-"}</td>
         <td>${appro.quantite}</td>
         <td>${appro.prix_achat ? formatCFA(appro.prix_achat) : "-"}</td>
-        <td>${appro.prix_achat ? formatCFA(appro.quantite * appro.prix_achat) : "-"}</td>
+        <td>${
+          appro.prix_achat ? formatCFA(appro.quantite * appro.prix_achat) : "-"
+        }</td>
+        <td>
+          <button class="btn btn-edit" onclick="editApprovisionnement(${
+            appro.id
+          })" style="margin-right: 5px; padding: 5px 10px; font-size: 12px;">
+            ✏️ Modifier
+          </button>
+        </td>
       </tr>
-    `)
+    `
+    )
     .join("");
+}
+
+// Nouvelles fonctions d'édition
+function editApprovisionnement(approId) {
+  const row = document.getElementById(`appro-${approId}`);
+  if (!row) return;
+
+  const cells = row.querySelectorAll("td");
+  const dateAppro = cells[0].textContent;
+  const reference = cells[1].textContent;
+  const nom = cells[2].textContent;
+  const fournisseur = cells[3].textContent === "-" ? "" : cells[3].textContent;
+  const quantite = cells[4].textContent;
+  const prixAchat = cells[5].textContent;
+
+  const produit = produits.find(
+    (p) => p.reference === reference && p.nom === nom
+  );
+  if (!produit) {
+    alert("Erreur: Impossible de trouver le produit correspondant");
+    return;
+  }
+
+  const dateParts = dateAppro.split("/");
+  const dateFormatted = `${dateParts[2]}-${dateParts[1].padStart(
+    2,
+    "0"
+  )}-${dateParts[0].padStart(2, "0")}`;
+  const prixAchatValue =
+    prixAchat === "-" ? "" : prixAchat.replace(/[^0-9]/g, "");
+
+  row.innerHTML = `
+    <td>
+      <input type="date" class="edit-input" value="${dateFormatted}" id="edit-date-${approId}" style="width: 140px;">
+    </td>
+    <td>
+      <select class="edit-input" id="edit-produit-${approId}" style="width: 100%;">
+        ${produits
+          .map(
+            (p) => `
+          <option value="${p.id}" ${p.id === produit.id ? "selected" : ""}>
+            ${p.nom} (${p.reference})
+          </option>
+        `
+          )
+          .join("")}
+      </select>
+    </td>
+    <td style="font-size: 12px; color: #6c757d;">
+      Auto-mis à jour
+    </td>
+    <td>
+      <input type="text" class="edit-input" value="${fournisseur}" id="edit-fournisseur-${approId}" style="width: 120px;" placeholder="Fournisseur">
+    </td>
+    <td>
+      <input type="number" class="edit-input" value="${quantite}" id="edit-quantite-${approId}" style="width: 80px;" min="1">
+    </td>
+    <td>
+      <input type="number" class="edit-input" value="${prixAchatValue}" id="edit-prix-${approId}" style="width: 100px;" step="1" placeholder="Prix">
+    </td>
+    <td style="font-size: 12px; color: #6c757d;">
+      Auto-calculé
+    </td>
+    <td>
+      <button class="btn btn-success" onclick="saveApprovisionnement(${approId})" style="margin-right: 5px; padding: 5px 10px; font-size: 12px;">
+        💾 Sauver
+      </button>
+      <button class="btn btn-primary" onclick="cancelEditAppro(${approId})" style="padding: 5px 10px; font-size: 12px;">
+        ❌ Annuler
+      </button>
+    </td>
+  `;
+}
+
+async function saveApprovisionnement(approId) {
+  try {
+    const approModifie = {
+      id: approId,
+      produit_id: parseInt(
+        document.getElementById(`edit-produit-${approId}`).value
+      ),
+      fournisseur: document.getElementById(`edit-fournisseur-${approId}`).value,
+      quantite: parseInt(
+        document.getElementById(`edit-quantite-${approId}`).value
+      ),
+      prix_achat:
+        parseFloat(document.getElementById(`edit-prix-${approId}`).value) || 0,
+      date_appro: document.getElementById(`edit-date-${approId}`).value,
+    };
+
+    if (
+      !approModifie.produit_id ||
+      !approModifie.quantite ||
+      !approModifie.date_appro
+    ) {
+      alert("Le produit, la quantité et la date sont obligatoires");
+      return;
+    }
+
+    if (approModifie.quantite <= 0) {
+      alert("La quantité doit être supérieure à 0");
+      return;
+    }
+
+    await ipcRenderer.invoke("update-approvisionnement", approModifie);
+    showMessage("appro-message", "Approvisionnement modifié avec succès !");
+    await loadApprovisionnements();
+    await loadStock();
+  } catch (error) {
+    showMessage(
+      "appro-message",
+      "Erreur lors de la modification: " + error.message,
+      "error"
+    );
+  }
+}
+
+function cancelEditAppro(approId) {
+  loadApprovisionnements();
 }
 
 async function handleAddApprovisionnement(e) {
   e.preventDefault();
   const formData = new FormData(e.target);
-  
+
   try {
     const appro = {
       produit_id: parseInt(formData.get("produit_id")),
@@ -383,11 +555,18 @@ async function handleAddApprovisionnement(e) {
     await ipcRenderer.invoke("add-approvisionnement", appro);
     showMessage("appro-message", "Approvisionnement enregistré avec succès !");
     e.target.reset();
-    setValueSafely('input[name="date_appro"]', new Date().toISOString().split("T")[0]);
+    setValueSafely(
+      'input[name="date_appro"]',
+      new Date().toISOString().split("T")[0]
+    );
     await loadApprovisionnements();
     await loadStock();
   } catch (error) {
-    showMessage("appro-message", "Erreur lors de l'enregistrement: " + error.message, "error");
+    showMessage(
+      "appro-message",
+      "Erreur lors de l'enregistrement: " + error.message,
+      "error"
+    );
   }
 }
 
@@ -414,8 +593,10 @@ function displayStock(stock) {
   tbody.innerHTML = stock
     .map((item) => {
       const valeurStock = item.stock_actuel * item.prix_vente;
-      const statut = item.stock_actuel <= item.stock_minimum ? "CRITIQUE" : "OK";
-      const statutClass = statut === "CRITIQUE" ? "status-critique" : "status-ok";
+      const statut =
+        item.stock_actuel <= item.stock_minimum ? "CRITIQUE" : "OK";
+      const statutClass =
+        statut === "CRITIQUE" ? "status-critique" : "status-ok";
 
       return `
         <tr>
@@ -463,15 +644,20 @@ function displayVentes(ventes) {
     .map((vente, index) => {
       const dateVente = new Date(vente.date_vente);
       const dateCreation = new Date(vente.created_at);
-      
+
       // Utiliser created_at si disponible (plus précis avec l'heure), sinon date_vente
       const displayDate = vente.created_at ? dateCreation : dateVente;
-      const formattedDateTime = `${displayDate.toLocaleDateString("fr-FR")} ${displayDate.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' })}`;
-      
+      const formattedDateTime = `${displayDate.toLocaleDateString(
+        "fr-FR"
+      )} ${displayDate.toLocaleTimeString("fr-FR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })}`;
+
       return `
         <tr>
           <td>${formattedDateTime}</td>
-          <td>${vente.facture_id || '-'}</td>
+          <td>${vente.facture_id || "-"}</td>
           <td>${vente.reference}</td>
           <td>${vente.nom}</td>
           <td>${vente.quantite}</td>
@@ -479,9 +665,10 @@ function displayVentes(ventes) {
           <td>${formatCFA(vente.total)}</td>
           <td>${vente.commentaire || "-"}</td>
           <td>
-            ${vente.facture_id ? 
-              `<button class="btn btn-print" onclick="printFactureDetail('${vente.facture_id}')">🖨️ Facture</button>` :
-              `<button class="btn btn-print" onclick="printFactureIndividuelle(${index})">🖨️ Facture</button>`
+            ${
+              vente.facture_id
+                ? `<button class="btn btn-print" onclick="printFactureDetail('${vente.facture_id}')">🖨️ Facture</button>`
+                : `<button class="btn btn-print" onclick="printFactureIndividuelle(${index})">🖨️ Facture</button>`
             }
           </td>
         </tr>
@@ -491,60 +678,72 @@ function displayVentes(ventes) {
 }
 
 // ==================== SYSTÈME DE PANIER ====================
-function renderProductsForSale(searchTerm = '') {
-  const grid = document.getElementById('products-grid');
+function renderProductsForSale(searchTerm = "") {
+  const grid = document.getElementById("products-grid");
   if (!grid || !produits || !stockData) return;
 
-  const productsWithStock = produits.map(product => {
-    const stock = stockData.find(s => s.id === product.id);
+  const productsWithStock = produits.map((product) => {
+    const stock = stockData.find((s) => s.id === product.id);
     return {
       ...product,
-      stock_actuel: stock ? stock.stock_actuel : 0
+      stock_actuel: stock ? stock.stock_actuel : 0,
     };
   });
 
-  const filteredProducts = productsWithStock.filter(product => 
-    product.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.reference.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = productsWithStock.filter(
+    (product) =>
+      product.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.reference.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (filteredProducts.length === 0) {
-    grid.innerHTML = '<div style="text-align: center; color: #6c757d; grid-column: 1/-1;">Aucun produit trouvé</div>';
+    grid.innerHTML =
+      '<div style="text-align: center; color: #6c757d; grid-column: 1/-1;">Aucun produit trouvé</div>';
     return;
   }
 
-  grid.innerHTML = filteredProducts.map(product => `
+  grid.innerHTML = filteredProducts
+    .map(
+      (product) => `
     <div class="product-card" onclick="addToCart(${product.id})">
       <div class="product-ref">${product.reference}</div>
       <div class="product-name">${product.nom}</div>
-      <div class="product-category">${product.categorie || '-'}</div>
+      <div class="product-category">${product.categorie || "-"}</div>
       <div class="product-price">${formatCFA(product.prix_vente)}</div>
       <div class="product-stock">Stock: ${product.stock_actuel}</div>
-      <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart(${product.id})" 
-              ${product.stock_actuel <= 0 ? 'disabled' : ''}>
-        ${product.stock_actuel <= 0 ? '❌ Rupture' : '➕ Ajouter'}
+      <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart(${
+        product.id
+      })" 
+              ${product.stock_actuel <= 0 ? "disabled" : ""}>
+        ${product.stock_actuel <= 0 ? "❌ Rupture" : "➕ Ajouter"}
       </button>
     </div>
-  `).join('');
+  `
+    )
+    .join("");
 }
 
 function addToCart(productId) {
-  const product = produits.find(p => p.id === productId);
-  const stock = stockData.find(s => s.id === productId);
-  
+  const product = produits.find((p) => p.id === productId);
+  const stock = stockData.find((s) => s.id === productId);
+
   if (!product || !stock) return;
 
   if (stock.stock_actuel <= 0) {
-    showMessage('vente-message', 'Produit en rupture de stock', 'error');
+    showMessage("vente-message", "Produit en rupture de stock", "error");
     return;
   }
 
-  const existingItem = cart.find(item => item.id === productId);
+  const existingItem = cart.find((item) => item.id === productId);
   if (existingItem) {
     if (existingItem.quantity < stock.stock_actuel) {
       existingItem.quantity++;
     } else {
-      showMessage('vente-message', 'Quantité maximum atteinte pour ce produit', 'error');
+      showMessage(
+        "vente-message",
+        "Quantité maximum atteinte pour ce produit",
+        "error"
+      );
       return;
     }
   } else {
@@ -554,44 +753,58 @@ function addToCart(productId) {
       nom: product.nom,
       prix_unitaire: product.prix_vente,
       quantity: 1,
-      stock_disponible: stock.stock_actuel
+      stock_disponible: stock.stock_actuel,
     });
   }
 
   renderCart();
-  showMessage('vente-message', `${product.nom} ajouté au panier`, 'success');
+  showMessage("vente-message", `${product.nom} ajouté au panier`, "success");
 }
 
 function renderCart() {
-  const cartContainer = document.getElementById('cart-items');
-  const cartCount = document.getElementById('cart-count');
-  const cartTotal = document.getElementById('cart-total');
+  const cartContainer = document.getElementById("cart-items");
+  const cartCount = document.getElementById("cart-count");
+  const cartTotal = document.getElementById("cart-total");
 
   if (!cartContainer || !cartCount || !cartTotal) return;
 
   if (cart.length === 0) {
-    cartContainer.innerHTML = '<div class="empty-cart">Aucun produit dans le panier<br>Sélectionnez des produits à gauche</div>';
-    cartCount.textContent = '0 articles';
-    cartTotal.textContent = '0 CFA';
+    cartContainer.innerHTML =
+      '<div class="empty-cart">Aucun produit dans le panier<br>Sélectionnez des produits à gauche</div>';
+    cartCount.textContent = "0 articles";
+    cartTotal.textContent = "0 CFA";
     return;
   }
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalAmount = cart.reduce((sum, item) => sum + (item.quantity * item.prix_unitaire), 0);
+  const totalAmount = cart.reduce(
+    (sum, item) => sum + item.quantity * item.prix_unitaire,
+    0
+  );
 
-  cartCount.textContent = `${totalItems} article${totalItems > 1 ? 's' : ''}`;
+  cartCount.textContent = `${totalItems} article${totalItems > 1 ? "s" : ""}`;
   cartTotal.textContent = formatCFA(totalAmount);
 
-  cartContainer.innerHTML = cart.map((item, index) => `
+  cartContainer.innerHTML = cart
+    .map(
+      (item, index) => `
     <div class="cart-item">
       <div class="cart-item-info">
         <div style="font-weight: 600; margin-bottom: 3px;">${item.nom}</div>
-        <div style="font-size: 12px; color: #6c757d; margin-bottom: 8px;">${item.reference}</div>
+        <div style="font-size: 12px; color: #6c757d; margin-bottom: 8px;">${
+          item.reference
+        }</div>
         <div class="cart-item-controls">
           <label style="font-size: 11px;">Qté:</label>
-          <input type="number" class="quantity-input" value="${item.quantity}" min="1" max="${item.stock_disponible}" onchange="updateQuantity(${index}, this.value)">
+          <input type="number" class="quantity-input" value="${
+            item.quantity
+          }" min="1" max="${
+        item.stock_disponible
+      }" onchange="updateQuantity(${index}, this.value)">
           <label style="font-size: 11px;">Prix:</label>
-          <input type="number" class="price-input" value="${item.prix_unitaire}" onchange="updatePrice(${index}, this.value)">
+          <input type="number" class="price-input" value="${
+            item.prix_unitaire
+          }" onchange="updatePrice(${index}, this.value)">
           <button class="remove-btn" onclick="removeFromCart(${index})">❌</button>
         </div>
         <div style="margin-top: 5px; font-size: 12px; color: #28a745; font-weight: 600;">
@@ -599,7 +812,9 @@ function renderCart() {
         </div>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join("");
 }
 
 function updateQuantity(index, newQuantity) {
@@ -608,7 +823,7 @@ function updateQuantity(index, newQuantity) {
     cart[index].quantity = quantity;
     renderCart();
   } else {
-    showMessage('vente-message', 'Quantité invalide', 'error');
+    showMessage("vente-message", "Quantité invalide", "error");
     renderCart();
   }
 }
@@ -619,7 +834,7 @@ function updatePrice(index, newPrice) {
     cart[index].prix_unitaire = price;
     renderCart();
   } else {
-    showMessage('vente-message', 'Prix invalide', 'error');
+    showMessage("vente-message", "Prix invalide", "error");
     renderCart();
   }
 }
@@ -628,57 +843,61 @@ function removeFromCart(index) {
   const item = cart[index];
   cart.splice(index, 1);
   renderCart();
-  showMessage('vente-message', `${item.nom} retiré du panier`, 'success');
+  showMessage("vente-message", `${item.nom} retiré du panier`, "success");
 }
 
 function clearCart() {
   if (cart.length === 0) return;
-  
-  if (confirm('Êtes-vous sûr de vouloir vider le panier ?')) {
+
+  if (confirm("Êtes-vous sûr de vouloir vider le panier ?")) {
     cart = [];
     renderCart();
-    showMessage('vente-message', 'Panier vidé', 'success');
+    showMessage("vente-message", "Panier vidé", "success");
   }
 }
 
 async function processSale() {
   if (cart.length === 0) {
-    showMessage('vente-message', 'Le panier est vide', 'error');
+    showMessage("vente-message", "Le panier est vide", "error");
     return;
   }
 
   try {
-    const commentaireInput = document.getElementById('batch-comment');
-    const commentaire = commentaireInput ? commentaireInput.value : '';
-    const dateVente = new Date().toISOString().split('T')[0];
-    
+    const commentaireInput = document.getElementById("batch-comment");
+    const commentaire = commentaireInput ? commentaireInput.value : "";
+    const dateVente = new Date().toISOString().split("T")[0];
+
     const venteData = {
-      items: cart.map(item => ({
+      items: cart.map((item) => ({
         produit_id: item.id,
         quantite: item.quantity,
-        prix_unitaire: item.prix_unitaire
+        prix_unitaire: item.prix_unitaire,
       })),
       commentaire,
-      date_vente: dateVente
+      date_vente: dateVente,
     };
 
     const result = await ipcRenderer.invoke("add-vente-lot", venteData);
-    
+
     // Générer et afficher la facture
     generateInvoice(result.factureId, cart, result.totalFacture, commentaire);
-    
+
     // Vider le panier et recharger les données
     cart = [];
     renderCart();
-    if (commentaireInput) commentaireInput.value = '';
+    if (commentaireInput) commentaireInput.value = "";
     await loadStock();
     await loadFactures();
     await loadVentes();
     renderProductsForSale();
-    
-    showMessage('vente-message', 'Vente enregistrée avec succès !', 'success');
+
+    showMessage("vente-message", "Vente enregistrée avec succès !", "success");
   } catch (error) {
-    showMessage('vente-message', 'Erreur lors de l\'enregistrement: ' + error.message, 'error');
+    showMessage(
+      "vente-message",
+      "Erreur lors de l'enregistrement: " + error.message,
+      "error"
+    );
   }
 }
 
@@ -692,8 +911,8 @@ function generateInvoice(factureId, items, totalAmount, commentaire) {
       <p>Facture de vente</p>
       <div style="margin-top: 15px;">
         <strong>N° Facture:</strong> ${factureId}<br>
-        <strong>Date:</strong> ${currentDate.toLocaleDateString('fr-FR')}<br>
-        <strong>Heure:</strong> ${currentDate.toLocaleTimeString('fr-FR')}
+        <strong>Date:</strong> ${currentDate.toLocaleDateString("fr-FR")}<br>
+        <strong>Heure:</strong> ${currentDate.toLocaleTimeString("fr-FR")}
       </div>
     </div>
 
@@ -710,7 +929,9 @@ function generateInvoice(factureId, items, totalAmount, commentaire) {
           </tr>
         </thead>
         <tbody>
-          ${items.map(item => `
+          ${items
+            .map(
+              (item) => `
             <tr>
               <td>${item.reference}</td>
               <td>${item.nom}</td>
@@ -718,16 +939,22 @@ function generateInvoice(factureId, items, totalAmount, commentaire) {
               <td>${formatCFA(item.prix_unitaire)}</td>
               <td>${formatCFA(item.quantity * item.prix_unitaire)}</td>
             </tr>
-          `).join('')}
+          `
+            )
+            .join("")}
         </tbody>
       </table>
     </div>
 
-    ${commentaire ? `
+    ${
+      commentaire
+        ? `
       <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
         <strong>Commentaire:</strong> ${commentaire}
       </div>
-    ` : ''}
+    `
+        : ""
+    }
 
     <div class="invoice-total">
       <h3>TOTAL À PAYER: ${formatCFA(totalAmount)}</h3>
@@ -739,28 +966,28 @@ function generateInvoice(factureId, items, totalAmount, commentaire) {
     </div>
   `;
 
-  const invoiceContent = document.getElementById('invoice-content');
-  const modal = document.getElementById('invoice-modal');
-  
+  const invoiceContent = document.getElementById("invoice-content");
+  const modal = document.getElementById("invoice-modal");
+
   if (invoiceContent && modal) {
     invoiceContent.innerHTML = invoiceHTML;
-    modal.style.display = 'block';
+    modal.style.display = "block";
   }
 }
 
 function closeModal() {
-  const modal = document.getElementById('invoice-modal');
+  const modal = document.getElementById("invoice-modal");
   if (modal) {
-    modal.style.display = 'none';
+    modal.style.display = "none";
   }
 }
 
 function printInvoice() {
-  const invoiceContent = document.getElementById('invoice-content');
+  const invoiceContent = document.getElementById("invoice-content");
   if (!invoiceContent) return;
-  
+
   const content = invoiceContent.innerHTML;
-  const printWindow = window.open('', '_blank');
+  const printWindow = window.open("", "_blank");
   printWindow.document.write(`
     <!DOCTYPE html>
     <html>
@@ -787,50 +1014,55 @@ function printInvoice() {
 async function loadFactures() {
   try {
     console.log("=== DÉBUT CHARGEMENT FACTURES ===");
-    
+
     // Mettre un indicateur de chargement
     const tbody = document.getElementById("factures-list");
     if (tbody) {
-      tbody.innerHTML = '<tr><td colspan="6" class="loading">Chargement des factures...</td></tr>';
+      tbody.innerHTML =
+        '<tr><td colspan="6" class="loading">Chargement des factures...</td></tr>';
     }
-    
+
     const factures = await ipcRenderer.invoke("get-factures");
     console.log("=== FACTURES REÇUES ===", factures);
     console.log("Nombre de factures:", factures?.length || 0);
-    
+
     if (!factures) {
       console.warn("Aucune facture reçue (null/undefined)");
       displayFactures([]);
       return;
     }
-    
+
     if (factures.length === 0) {
       console.info("Aucune facture dans la base de données");
       displayFactures([]);
       return;
     }
-    
+
     // Afficher les détails des premières factures pour déboguer
     console.log("Première facture:", factures[0]);
-    
+
     // Trier par date décroissante
     const facturesSorted = factures.sort((a, b) => {
       const dateA = new Date(a.created_at || a.date_facture);
       const dateB = new Date(b.created_at || b.date_facture);
       return dateB - dateA;
     });
-    
+
     console.log("=== AFFICHAGE DES FACTURES ===");
     displayFactures(facturesSorted);
-    
   } catch (error) {
     console.error("=== ERREUR CHARGEMENT FACTURES ===", error);
-    showMessage("facture-message", "Erreur lors du chargement des factures: " + error.message, "error");
-    
+    showMessage(
+      "facture-message",
+      "Erreur lors du chargement des factures: " + error.message,
+      "error"
+    );
+
     // Afficher un message d'erreur dans le tableau
     const tbody = document.getElementById("factures-list");
     if (tbody) {
-      tbody.innerHTML = '<tr><td colspan="6" style="color: red; text-align: center;">Erreur de chargement</td></tr>';
+      tbody.innerHTML =
+        '<tr><td colspan="6" style="color: red; text-align: center;">Erreur de chargement</td></tr>';
     }
   }
 }
@@ -845,7 +1077,8 @@ function displayFactures(factures) {
   console.log("Affichage des factures:", factures?.length || 0);
 
   if (!factures || factures.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #6c757d;">Aucune facture enregistrée</td></tr>';
+    tbody.innerHTML =
+      '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #6c757d;">Aucune facture enregistrée</td></tr>';
     return;
   }
 
@@ -854,36 +1087,58 @@ function displayFactures(factures) {
       .map((facture) => {
         try {
           const dateFacture = new Date(facture.date_facture);
-          const dateCreation = facture.created_at ? new Date(facture.created_at) : null;
-          
+          const dateCreation = facture.created_at
+            ? new Date(facture.created_at)
+            : null;
+
           // Utiliser created_at si disponible (plus précis avec l'heure), sinon date_facture
           const displayDate = dateCreation || dateFacture;
-          
+
           // Vérifier que la date est valide
-          const formattedDateTime = displayDate && !isNaN(displayDate.getTime()) 
-            ? `${displayDate.toLocaleDateString("fr-FR")} ${displayDate.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' })}`
-            : 'Date invalide';
-          
+          const formattedDateTime =
+            displayDate && !isNaN(displayDate.getTime())
+              ? `${displayDate.toLocaleDateString(
+                  "fr-FR"
+                )} ${displayDate.toLocaleTimeString("fr-FR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}`
+              : "Date invalide";
+
           return `
             <tr>
-              <td>${facture.id || 'N/A'}</td>
+              <td>${facture.id || "N/A"}</td>
               <td>${formattedDateTime}</td>
               <td>${facture.nb_articles || 0}</td>
-              <td>${facture.total_facture ? formatCFA(facture.total_facture) : '0 CFA'}</td>
+              <td>${
+                facture.total_facture
+                  ? formatCFA(facture.total_facture)
+                  : "0 CFA"
+              }</td>
               <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                ${facture.produits || '-'}
+                ${facture.produits || "-"}
               </td>
               <td>
-                <button class="btn btn-print" onclick="printFactureDetail('${facture.id}')">🖨️ Réimprimer</button>
-                <button class="btn btn-primary" onclick="viewFactureDetail('${facture.id}')" style="margin-left: 5px; font-size: 12px;">👁️ Détail</button>
+                <button class="btn btn-print" onclick="printFactureDetail('${
+                  facture.id
+                }')">🖨️ Réimprimer</button>
+                <button class="btn btn-primary" onclick="viewFactureDetail('${
+                  facture.id
+                }')" style="margin-left: 5px; font-size: 12px;">👁️ Détail</button>
               </td>
             </tr>
           `;
         } catch (error) {
-          console.error("Erreur lors de l'affichage de la facture:", facture, error);
+          console.error(
+            "Erreur lors de l'affichage de la facture:",
+            facture,
+            error
+          );
           return `
             <tr>
-              <td colspan="6" style="color: red;">Erreur d'affichage pour la facture ${facture?.id || 'inconnue'}</td>
+              <td colspan="6" style="color: red;">Erreur d'affichage pour la facture ${
+                facture?.id || "inconnue"
+              }</td>
             </tr>
           `;
         }
@@ -891,7 +1146,8 @@ function displayFactures(factures) {
       .join("");
   } catch (error) {
     console.error("Erreur globale lors de l'affichage des factures:", error);
-    tbody.innerHTML = '<tr><td colspan="6" style="color: red; text-align: center;">Erreur d\'affichage des factures</td></tr>';
+    tbody.innerHTML =
+      '<tr><td colspan="6" style="color: red; text-align: center;">Erreur d\'affichage des factures</td></tr>';
   }
 }
 
@@ -901,12 +1157,12 @@ async function viewFactureDetail(factureId) {
     if (details.length > 0) {
       const facture = details[0];
       generateInvoice(
-        factureId, 
-        details.map(d => ({
+        factureId,
+        details.map((d) => ({
           reference: d.reference,
           nom: d.nom,
           quantity: d.quantite,
-          prix_unitaire: d.prix_unitaire
+          prix_unitaire: d.prix_unitaire,
         })),
         facture.total_facture,
         facture.commentaire_facture
@@ -929,13 +1185,15 @@ function printFactureIndividuelle(venteIndex) {
   if (!vente || vente.facture_id) return;
 
   const factureId = `TEMP-${Date.now()}`;
-  const items = [{
-    reference: vente.reference,
-    nom: vente.nom,
-    quantity: vente.quantite,
-    prix_unitaire: vente.prix_unitaire
-  }];
-  
+  const items = [
+    {
+      reference: vente.reference,
+      nom: vente.nom,
+      quantity: vente.quantite,
+      prix_unitaire: vente.prix_unitaire,
+    },
+  ];
+
   generateInvoice(factureId, items, vente.total, vente.commentaire);
 }
 
@@ -954,20 +1212,32 @@ function filterVentesByDate() {
     return;
   }
 
-  const ventesFiltered = allVentesData.filter((vente) => {
-    const dateVente = new Date(vente.date_vente);
-    return dateVente >= new Date(dateDebut) && dateVente <= new Date(dateFin);
-  }).sort((a, b) => new Date(b.date_vente) - new Date(a.date_vente)); // Maintenir le tri par date décroissante
+  const ventesFiltered = allVentesData
+    .filter((vente) => {
+      const dateVente = new Date(vente.date_vente);
+      return dateVente >= new Date(dateDebut) && dateVente <= new Date(dateFin);
+    })
+    .sort((a, b) => new Date(b.date_vente) - new Date(a.date_vente)); // Maintenir le tri par date décroissante
 
   displayVentes(ventesFiltered);
-  showMessage("vente-message", `${ventesFiltered.length} vente(s) trouvée(s) pour la période sélectionnée`, "success");
+  showMessage(
+    "vente-message",
+    `${ventesFiltered.length} vente(s) trouvée(s) pour la période sélectionnée`,
+    "success"
+  );
 }
 
 function resetVentesFilter() {
   // Réafficher toutes les ventes avec le tri par date décroissante
-  const ventesSorted = allVentesData.sort((a, b) => new Date(b.date_vente) - new Date(a.date_vente));
+  const ventesSorted = allVentesData.sort(
+    (a, b) => new Date(b.date_vente) - new Date(a.date_vente)
+  );
   displayVentes(ventesSorted);
-  showMessage("vente-message", "Toutes les ventes sont maintenant affichées", "success");
+  showMessage(
+    "vente-message",
+    "Toutes les ventes sont maintenant affichées",
+    "success"
+  );
 }
 
 // ==================== GESTION DES STATISTIQUES (VERSION CORRIGÉE) ====================
@@ -983,14 +1253,18 @@ async function loadStats() {
   try {
     console.log("=== CHARGEMENT STATISTIQUES ===");
     console.log("Période:", dateDebut, "à", dateFin);
-    
+
     const stats = await ipcRenderer.invoke("get-stats", dateDebut, dateFin);
     console.log("Statistiques reçues:", stats);
-    
+
     displayStats(stats);
   } catch (error) {
     console.error("Erreur lors du chargement des statistiques:", error);
-    showMessage("stats-message", "Erreur lors du chargement des statistiques: " + error.message, "error");
+    showMessage(
+      "stats-message",
+      "Erreur lors du chargement des statistiques: " + error.message,
+      "error"
+    );
   }
 }
 
@@ -1003,14 +1277,14 @@ function displayStats(stats) {
   // Corriger l'affichage des totaux - utiliser textContent au lieu de value
   const totalVentesElement = document.getElementById("total-ventes");
   const nbTransactionsElement = document.getElementById("nb-transactions");
-  
+
   if (totalVentesElement) {
     totalVentesElement.textContent = formatCFA(stats.totalVentes || 0);
     console.log("Total ventes affiché:", totalVentesElement.textContent);
   } else {
     console.error("Élément total-ventes introuvable");
   }
-  
+
   if (nbTransactionsElement) {
     nbTransactionsElement.textContent = stats.nbTransactions || 0;
     console.log("Nb transactions affiché:", nbTransactionsElement.textContent);
@@ -1025,20 +1299,23 @@ function displayStats(stats) {
   }
 
   if (!stats.ventesParProduit || stats.ventesParProduit.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4">Aucune vente sur cette période</td></tr>';
+    tbody.innerHTML =
+      '<tr><td colspan="4">Aucune vente sur cette période</td></tr>';
     console.log("Aucune vente trouvée pour cette période");
     return;
   }
 
   tbody.innerHTML = stats.ventesParProduit
-    .map((item) => `
+    .map(
+      (item) => `
       <tr>
         <td>${item.reference}</td>
         <td>${item.nom}</td>
         <td>${item.qte_vendue}</td>
         <td>${formatCFA(item.ca_total)}</td>
       </tr>
-    `)
+    `
+    )
     .join("");
 
   console.log("Tableau des ventes par produit mis à jour");
@@ -1047,15 +1324,20 @@ function displayStats(stats) {
 
 // Version corrigée de setValueSafely pour gérer les différents types d'éléments
 function setValueSafely(selector, value) {
-  const element = typeof selector === 'string' 
-    ? document.getElementById(selector) || document.querySelector(selector)
-    : selector;
-  
+  const element =
+    typeof selector === "string"
+      ? document.getElementById(selector) || document.querySelector(selector)
+      : selector;
+
   if (element) {
     // Si c'est un input, textarea ou select, utiliser value
-    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') {
+    if (
+      element.tagName === "INPUT" ||
+      element.tagName === "TEXTAREA" ||
+      element.tagName === "SELECT"
+    ) {
       element.value = value;
-    } 
+    }
     // Sinon, utiliser textContent
     else {
       element.textContent = value;
@@ -1136,11 +1418,14 @@ async function testFactures() {
     console.log("Type:", typeof factures);
     console.log("Est un array:", Array.isArray(factures));
     console.log("Longueur:", factures?.length);
-    
+
     if (factures && factures.length > 0) {
-      console.log("Première facture détaillée:", JSON.stringify(factures[0], null, 2));
+      console.log(
+        "Première facture détaillée:",
+        JSON.stringify(factures[0], null, 2)
+      );
     }
-    
+
     return factures;
   } catch (error) {
     console.error("Erreur test factures:", error);
@@ -1169,3 +1454,6 @@ window.clearCart = clearCart;
 window.processSale = processSale;
 window.closeModal = closeModal;
 window.printInvoice = printInvoice;
+window.editApprovisionnement = editApprovisionnement;
+window.saveApprovisionnement = saveApprovisionnement;
+window.cancelEditAppro = cancelEditAppro;
